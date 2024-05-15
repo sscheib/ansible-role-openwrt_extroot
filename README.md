@@ -1,5 +1,5 @@
 <!-- markdownlint-disable MD013 MD041 -->
-[![ansible-lint](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/ansible-lint.yml) [![Publish to Ansible Galaxy](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/release.yml/badge.svg)](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/release.yml) [![markdown link check](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/markdown-link-check.yml) [![markdownlint](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/markdownlint.yml/badge.svg)](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/markdownlint.yml) [![pyspelling](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/pyspelling.yml/badge.svg)](https://github.com/sscheib/ansible-role-file_deployment/actions/workflows/pyspelling.yml)
+[![ansible-lint](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/ansible-lint.yml) [![Publish to Ansible Galaxy](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/release.yml/badge.svg)](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/release.yml) [![markdown link check](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/markdown-link-check.yml) [![markdownlint](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/markdownlint.yml/badge.svg)](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/markdownlint.yml) [![pyspelling](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/pyspelling.yml/badge.svg)](https://github.com/sscheib/ansible-role-openwrt_extroot/actions/workflows/pyspelling.yml)
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org) [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 <!-- markdownlint-disable MD013 MD041 -->
@@ -92,11 +92,16 @@ None
 ...
 ```
 
+## Contributing
+
+First off, thanks for taking the time to contribute! ❤️
+
+All types of contributions are encouraged and valued.
+Please See the [`CONTRIBUTING.md`](CONTRIBUTING.md) for different ways to help and details about how this project handles them.
+
 ## License
 
 [`GPL-2.0-or-later`](LICENSE)
-
-## Footnotes
 
 [^uci]: [UCI explanation](https://openwrt.org/docs/techref/uci)
 [^file_system]: If it differs from the default (`ext4`), you also need to adjust the required packages to include the respective kernel modules required
