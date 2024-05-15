@@ -32,7 +32,7 @@ also be very happy about:
 ## Code of Conduct
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
-By participating, you are expected to uphold this code. Please report unacceptable behavior to <github+steffen@scheib.xyz>.
+By participating, you are expected to uphold this code. Please report unacceptable behavior to <github@scheib.xyz>.
 
 ## I Have a Question
 
@@ -79,7 +79,7 @@ in detail in your report. Please complete the following steps in advance to help
 #### How Do I Submit a Good Bug Report?
 
 > You must never report security related issues, vulnerabilities or bugs including sensitive information to the issue tracker, or elsewhere in public. Instead sensitive bugs
-must be sent by email to <github+steffen@scheib.xyz>.
+must be sent by email to <github@scheib.xyz>.
 
 We use GitHub issues to track bugs and errors. If you run into an issue with the project:
 
