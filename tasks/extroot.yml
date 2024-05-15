@@ -1,0 +1,270 @@
+---
+- name: 'extroot | Ensure required packages are present'
+  ansible.builtin.package:
+    name: '{{ _required_packages }}'
+    state: 'present'
+    update_cache: true
+  become: true
+
+- name: 'extroot | Gather mounts facts'
+  ansible.builtin.setup:
+    gather_subset:
+      - '!all'
+      - '!min'
+      - 'mounts'
+
+- name: 'extroot | Ensure the overlay filesystem is not currently mounted from: {{ _ext_usb_device_part }}'
+  ansible.builtin.assert:
+    that:
+      - >-
+        ansible_facts.mounts |
+        selectattr('device', '==', _ext_usb_device_part) |
+        selectattr('mount', '==', _ext_overlay_filesystem_path) |
+        length == 0
+
+    success_msg: 'Path {{ _ext_overlay_filesystem_path }} is not mounted from {{ _ext_usb_device_part }}'
+    fail_msg: >-
+      {{
+        _ext_usb_device_part ~
+        ' is mounted on ' ~
+        _ext_overlay_filesystem_path ~
+        ' which means it is currently used as root partition by OpenWrt!'
+      }}
+
+- name: 'extroot | Ensure USB partition is not mounted: {{ _ext_usb_device_part }}'
+  ansible.posix.mount:
+    src: '{{ _ext_usb_device_part }}'
+    path: '{{ __t_mount.mount }}'
+    state: 'unmounted'
+  become: true
+  loop: >-
+    {{
+      ansible_facts.mounts |
+      selectattr('device', '==', _ext_usb_device_part)
+    }}
+  loop_control:
+    loop_var: '__t_mount'
+    label: '{{ __t_mount.mount }}'
+
+- name: 'extroot | Read device information from: {{ _ext_usb_device }}'
+  community.general.parted:
+    device: '{{ _ext_usb_device }}'
+    unit: 'MiB'
+    state: 'info'
+  register: '__t_disk_information'
+  become: true
+
+- name: 'extroot | Remove all partitions from: {{ _ext_usb_device }}'
+  community.general.parted:
+    device: '{{ _usb_device }}'
+    number: '{{ item.num }}'
+    state: 'absent'
+  become: true
+  loop: '{{ __t_disk_information.partitions | default([]) }}'
+  loop_control:
+    loop_var: '__t_part'
+    label: '{{ __t_part.num }}'
+
+- name: 'extroot | Create a new primary partition with the maximum size possible on: {{ _ext_usb_device }}'
+  community.general.parted:
+    device: '{{ _ext_usb_device }}'
+    label: 'msdos'
+    align: 'optimal'
+    part_start: '0%'
+    part_end: '100%'
+    part_type: 'primary'
+    number: 1
+    state: 'present'
+  become: true
+
+- name: 'extroot | Blank filesystem signature on: {{ _ext_usb_device_part }}'
+  community.general.filesystem:
+    dev: '{{ _ext_usb_device_part }}'
+    state: 'absent'
+  become: true
+
+- name: 'extroot | Create filesystem on: {{ _ext_usb_device_part }}'
+  community.general.filesystem:
+    fstype: '{{ _ext_filesystem_type }}'
+    dev: '{{ _ext_usb_device_part }}'
+    resizefs: true
+    force: true
+  become: true
+
+- name: 'extroot | Ensure directory for mounting flash exists: {{ _ext_flash_mount_path }}'
+  ansible.builtin.file:
+    path: '{{ _ext_flash_mount_path }}'
+    owner: '{{ _ext_flash_mount_owner }}'
+    group: '{{ _ext_flash_mount_group }}'
+    mode: '{{ _ext_flash_mount_mode }}'
+    state: 'directory'
+  become: true
+  when:
+    - '_ext_create_flash_mount is defined'
+    - '_ext_create_flash_mount'
+
+- name: 'extroot | Set fact: Get current device that mounts: {{ _ext_overlay_filesystem_path }}'
+  ansible.builtin.set_fact:
+    __t_flash_overlay_device: >-
+      {{
+        ansible_mounts |
+        selectattr('mount', '==', _ext_overlay_filesystem_path) |
+        map(attribute='device') |
+        first
+      }}
+
+- name: 'extroot | Create flash mount UCI entry: {{ _ext_flash_mount_uci_name }}'
+  ansible.builtin.shell:
+    cmd: |
+      uci -q delete fstab.{{ _ext_flash_mount_uci_name }} || true
+      uci set fstab.{{ _ext_flash_mount_uci_name }}=mount
+      uci set fstab.{{ _ext_flash_mount_uci_name }}.device={{ __t_flash_overlay_device }}
+      uci set fstab.{{ _ext_flash_mount_uci_name }}.target={{ _ext_flash_mount_path }}
+      uci commit fstab
+  changed_when: true
+  become: true
+
+- name: 'extroot | Setup temporary mount directory: {{ _ext_tmp_mount_path }}'
+  ansible.builtin.file:
+    path: '{{ _ext_tmp_mount_path }}'
+    owner: '{{ _ext_tmp_mount_owner }}'
+    group: '{{ _ext_tmp_mount_group }}'
+    mode: '{{ _ext_tmp_mount_mode }}'
+    state: 'directory'
+  become: true
+
+- name: "extroot | Mount USB drive temporarily: {{ _ext_usb_device_part ~ ' to ' ~ _ext_tmp_mount_path }}"
+  ansible.posix.mount:
+    path: '{{ _ext_tmp_mount_path }}'
+    src: '{{ _ext_usb_device_part }}'
+    fstype: '{{ _ext_filesystem_type }}'
+    state: 'mounted'
+  become: true
+
+- name: 'extroot | Setup temporary root directory: {{ _ext_tmp_root_mount_path }}'
+  ansible.builtin.file:
+    path: '{{ _ext_tmp_root_mount_path }}'
+    owner: '{{ _ext_tmp_root_mount_owner }}'
+    group: '{{ _ext_tmp_root_mount_group }}'
+    mode: '{{ _ext_tmp_root_mount_mode }}'
+    state: 'directory'
+  become: true
+
+- name: >-
+    extroot | Bind mount overlay filesystem: {{ _ext_overlay_filesystem_path ~ ' -> ' ~ _ext_tmp_root_mount_path }}
+  ansible.posix.mount:
+    path: '{{ _ext_tmp_root_mount_path }}'
+    src: '{{ _ext_overlay_filesystem_path }}'
+    opts: 'bind'
+    state: 'mounted'
+    fstype: 'none'
+  become: true
+
+- name: "extroot | Synchronize contents: {{ _ext_tmp_root_mount_path ~ ' -> ' ~ _ext_tmp_mount_path }}"
+  ansible.posix.synchronize:
+    src: >-
+      {{
+        _ext_tmp_root_mount_path
+        if _ext_tmp_root_mount_path |
+          regex_search('\/$') |
+          length == 1
+        else
+        _ext_tmp_root_mount_path ~ '/'
+      }}
+    dest: >-
+      {{
+        _ext_tmp_mount_path
+        if _ext_tmp_mount_path |
+          regex_search('\/$') |
+          length == 1
+        else
+        _ext_tmp_mount_path ~ '/'
+      }}
+    recursive: true
+    archive: true
+  delegate_to: '{{ inventory_hostname }}'
+  become: true
+
+- name: 'extroot | Ensure temporary mounts are unmounted'
+  ansible.posix.mount:
+    path: '{{ __t_mount }}'
+    state: 'absent'
+  become: true
+  loop:
+    - '{{ _tmp_mount_path }}'
+    - '{{ _tmp_root_mount_path }}'
+  loop_control:
+    loop_var: '__t_mount'
+
+# UUIDs are not populated into ansible_facts in OpenWrt, I have no idea why
+- name: 'extroot | Get UUID of: {{ _usb_device_part }}'
+  ansible.builtin.command:
+    cmd: |
+      blkid -o value -s UUID {{ _usb_device_part }}
+  changed_when: false
+  register: '__t_uuid'
+  become: true
+
+- name: 'extroot | Create UCI mount entry to mount the overlay file system to: {{ _usb_device_part }}'
+  ansible.builtin.shell:
+    cmd: |
+      uci -q delete fstab.overlay || true
+      uci set fstab.overlay=mount
+      uci set fstab.overlay.uuid={{ __t_uuid.stdout }}
+      uci set fstab.overlay.target={{ _ext_overlay_filesystem_path }}
+      uci commit fstab
+  changed_when: true
+  become: true
+
+- name: 'extroot | Reboot the device'
+  ansible.builtin.reboot:
+    reboot_command: 'reboot'
+    test_command: 'date'
+  become: true
+
+- name: 'extroot | Ensure mount facts are updated'
+  ansible.builtin.setup:
+    gather_subset:
+      - '!all'
+      - '!min'
+      - 'mounts'
+
+- name: 'extroot | Ensure the overlay partition is mounted correctly'
+  ansible.builtin.assert:
+    that:
+      - >-
+        ansible_facts.mounts |
+        selectattr('device', '==', _ext_usb_device_part) |
+        selectattr('mount', '==', _ext_overlay_filesystem_path) |
+        length = 1
+
+    success_msg: 'Successfully set up extroot on partition {{ _ext_usb_device_part }}'
+    fail_msg: 'Setting up extroot on partition {{ _ext_usb_device_part }} failed'
+    quiet: '{{ _ext_quiet_assert }}'
+
+- name: 'extroot | Ensure flash is mounted correctly'
+  ansible.builtin.assert:
+    that:
+      - >-
+        ansible_facts.mounts |
+        selectattr('mount', '==', _ext_flash_mount_path) |
+        length = 1
+
+    success_msg: 'Successfully mounted flash to {{ _ext_flash_mount_path }}'
+    fail_msg: 'Setting up the flash mount on {{ _ext_flash_mount_path }} failed'
+    quiet: '{{ _ext_quiet_assert }}'
+  when:
+    - '_ext_create_flash_mount is defined'
+    - '_ext_create_flash_mount'
+
+- name: 'extroot | Ensure temporary mounts are removed'
+  ansible.posix.mount:
+    path: '{{ __t_mount }}'
+    state: 'absent'
+  become: true
+  loop:
+    - '{{ _tmp_mount_path }}'
+    - '{{ _tmp_root_mount_path }}'
+  loop_control:
+    loop_var: '__t_mount'
+...

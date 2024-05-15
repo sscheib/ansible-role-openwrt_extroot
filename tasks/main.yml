@@ -1,0 +1,12 @@
+---
+- name: 'Include tasks to ensure prerequisites are met'
+  ansible.builtin.include_tasks:
+    file: 'assert.yml'
+  when: >-
+    _ext_skip_assert is not defined
+    or not _ext_skip_assert
+
+- name: 'Include tasks to setup extroot'
+  ansible.builtin.include_tasks:
+    file: 'extroot.yml'
+...

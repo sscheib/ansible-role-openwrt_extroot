@@ -1,0 +1,77 @@
+---
+- name: 'assert | Ensure _ext_quiet_assert is defined properly'
+  ansible.builtin.assert:
+    that:
+      - "lookup('ansible.builtin.vars', __t_var) is defined"
+      - "lookup('ansible.builtin.vars', __t_var) is boolean"
+      - "lookup('ansible.builtin.vars', __t_var) | bool | string == lookup('ansible.builtin.vars', __t_var) | string"
+    success_msg: "Variable '{{ __t_var }}' defined properly - value: '{{ lookup('ansible.builtin.vars', __t_var) }}'"
+    fail_msg: "Variable '{{ __t_var }}' failed to validate"
+    quiet: '{{ _ext_quiet_assert | default(false) }}'
+  loop:
+    - '_ext_quiet_assert'
+  loop_control:
+    loop_var: '__t_var'
+
+- name: 'assert | Ensure string variables are defined properly'
+  ansible.builtin.assert:
+    that:
+      - "lookup('ansible.builtin.vars', __t_var) is defined"
+      - "lookup('ansible.builtin.vars', __t_var) is string"
+      - "lookup('ansible.builtin.vars', __t_var) != None"
+      - "lookup('ansible.builtin.vars', __t_var) != ''"
+    success_msg: "Variable '{{ __t_var }}' defined properly - value: '{{ lookup('ansible.builtin.vars', __t_var) }}'"
+    fail_msg: "Variable '{{ __t_var }}' failed to validate"
+    quiet: '{{ _ext_quiet_assert }}'
+  loop:
+    - '_ext_usb_device'
+    - '_ext_usb_device_part'
+    - '_ext_filesystem_type'
+    - '_ext_flash_mount_path'
+    - '_ext_flash_mount_owner'
+    - '_ext_flash_mount_group'
+    - '_ext_flash_mount_mode'
+    - '_ext_flash_mount_uci_name'
+    - '_ext_tmp_mount_path'
+    - '_ext_tmp_mount_owner'
+    - '_ext_tmp_mount_group'
+    - '_ext_tmp_mount_mode'
+    - '_ext_tmp_root_mount_path'
+    - '_ext_tmp_root_mount_owner'
+    - '_ext_tmp_root_mount_group'
+    - '_ext_tmp_root_mount_mode'
+    - '_ext_overlay_filesystem_path'
+  loop_control:
+    loop_var: '__t_var'
+
+- name: 'assert | Ensure boolean variables are defined properly'
+  ansible.builtin.assert:
+    that:
+      - "lookup('ansible.builtin.vars', __t_var) is defined"
+      - "lookup('ansible.builtin.vars', __t_var) is boolean"
+      - "lookup('ansible.builtin.vars', __t_var) | bool | string == lookup('ansible.builtin.vars', __t_var) | string"
+    success_msg: "Variable '{{ __t_var }}' defined properly - value: '{{ lookup('ansible.builtin.vars', __t_var) }}'"
+    fail_msg: "Variable '{{ __t_var }}' failed to validate"
+    quiet: '{{ _sat_quiet_assert }}'
+  loop:
+    - '_ext_create_flash_mount'
+  loop_control:
+    loop_var: '__t_var'
+
+- name: 'assert | Ensure list variables are defined properly'
+  ansible.builtin.assert:
+    that:
+      - "lookup('ansible.builtin.vars', __t_var) is defined"
+      - "lookup('ansible.builtin.vars', __t_var) is string"
+      - "lookup('ansible.builtin.vars', __t_var) is sequence"
+      - "lookup('ansible.builtin.vars', __t_var) is iterable"
+      - "lookup('ansible.builtin.vars', __t_var) is not mapping"
+      - "lookup('ansible.builtin.vars', __t_var) | list | string == lookup('ansible.builtin.vars', __t_var) | string"
+    success_msg: "Variable '{{ __t_var }}' defined properly - value: '{{ lookup('ansible.builtin.vars', __t_var) }}'"
+    fail_msg: "Variable '{{ __t_var }}' failed to validate"
+    quiet: '{{ _sat_quiet_assert }}'
+  loop:
+    - '_ext_required_packages'
+  loop_control:
+    loop_var: '__t_var'
+...

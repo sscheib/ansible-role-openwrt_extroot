@@ -1,0 +1,60 @@
+---
+# path to the USB device
+_ext_usb_device: '{{ ext_usb_device | mandatory }}'
+
+# defines the partition to create
+#
+# note: this role only supports creating a single partition
+_ext_usb_device_part: >-
+  {{
+    (
+      ext_usb_device_part is defined
+      and ext_usb_device_part | default('') != ''
+      and ext_usb_device_part | default('') != None
+    ) | ansible.builtin.ternary(
+      ext_usb_device_part,
+      _ext_usb_device_part ~ 1
+    )
+  }}
+
+# whether to create a flash mount so that the extroot configuration can still be modified while being
+# in the extroot (e.g. replacing USB stick or similar)
+_ext_create_flash_mount: '{{ _ext_create_flash_mount | default(_def_ext_create_flash_mount) }}'
+_ext_flash_mount_path: '{{ ext_flash_mount_path | default(_def_ext_flash_mount_path) }}'
+_ext_flash_mount_owner: '{{ ext_flash_mount_owner | default(_def_ext_flash_mount_owner) }}'
+_ext_flash_mount_group: '{{ ext_flash_mount_group | default(_def_ext_flash_mount_group) }}'
+_ext_flash_mount_mode: '{{ ext_flash_mount_mode | default(_def_ext_flash_mount_mode) }}'
+_ext_flash_mount_uci_name: '{{ ext_flash_mount_uci_name | default(_def_ext_flash_mount_uci_name) }}'
+
+# path where the overlay file system is mounted
+_ext_overlay_filesystem_path: '{{ ext_overlay_filesystem_path | default(_def_ext_overlay_filesystem_path) }}'
+
+# path where the overlay file system gets bind mounted temporarily in order to copy the contents
+# from it to the USB drive
+_ext_tmp_root_mount_path: '{{ ext_tmp_root_mount_path | default(_def_ext_tmp_root_mount_path) }}'
+_ext_tmp_root_mount_owner: '{{ ext_tmp_root_mount_owner | default(_def_ext_tmp_root_mount_owner) }}'
+_ext_tmp_root_mount_group: '{{ ext_tmp_root_mount_group | default(_def_ext_tmp_root_mount_group) }}'
+_ext_tmp_root_mount_mode: '{{ ext_tmp_root_mount_mode | default(_def_ext_tmp_root_mount_mode) }}'
+
+# path where the USB drive gets mounted temporarily in order to copy the data from the temporary
+# root mount path (`_ext_tmp_root_mount_path`)
+_ext_tmp_mount_path: '{{ ext_tmp_mount_path | default(_def_ext_tmp_mount_path) }}'
+_ext_tmp_mount_owner: '{{ ext_tmp_mount_owner | default(_def_ext_tmp_mount_owner) }}'
+_ext_tmp_mount_group: '{{ ext_tmp_mount_group | default(_def_ext_tmp_mount_group) }}'
+_ext_tmp_mount_mode: '{{ ext_tmp_mount_mode | default(_def_ext_tmp_mount_mode) }}'
+
+# file system type to create on the USB partition
+#
+# note: if it differs from the default, you likely need to also adjust the required packages
+#       to include the respective kernel modules required
+_ext_filesystem_type: '{{ ext_filesystem_type | default(_def_ext_filesystem_type) }}'
+
+# list of packages which are required to setup the extroot
+_ext_required_packages: '{{ ext_required_packages | default(_def_ext_required_packages) }}'
+
+# whether to quiet assert statements
+_ext_quiet_assert: '{{ ext_quiet_assert | default(_def_ext_quiet_assert) }}'
+
+# whether to skip the initial assert
+_ext_skip_assert: '{{ ext_skip_assert | default(_def_ext_skip_assert) }}'
+...

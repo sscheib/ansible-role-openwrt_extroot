@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  role_name: 'openwrt_extroot'
+  namespace: 'sscheib'
+  author: 'Steffen Scheib'
+  description: 'Ansible role to create an Extroot on OpenWrt devices'
+  issue_tracker_url: 'https://github.com/sscheib/ansible-role-openwrt_extroot/issues'
+  license: 'GPL-2.0-or-later'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'OpenWrt'
+      versions:
+        - '21.02'
+
+  galaxy_tags:
+    - 'openwrt'
+    - 'extroot'
+
+dependencies: []
+...

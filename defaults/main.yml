@@ -1,0 +1,51 @@
+---
+# whether to create a flash mount so that the extroot configuration can still be modified while being
+# in the extroot (e.g. replacing USB stick or similar)
+_def_ext_create_flash_mount: true
+_def_ext_flash_mount_path: '/rwm'
+_def_ext_flash_mount_owner: 'root'
+_def_ext_flash_mount_group: 'root'
+_def_ext_flash_mount_mode: '0644'
+_def_ext_flash_mount_uci_name: 'rwm'
+
+# filesystem type to create on the USB partition
+#
+# note: if it differs from the default (ext4), you need to also adjust the required packages
+#       to include the respective kernel modules required
+_def_ext_filesystem_type: 'ext4'
+
+# path where the overlay file system is mounted
+_def_ext_overlay_filesystem_path: '/overlay'
+
+# path where _ext_overlay_filesystem_path gets bind mounted temporarily  in order to copy the contents
+# from it to the USB drive
+_def_ext_tmp_root_mount_path: '/tmp/cproot'
+_def_ext_tmp_root_mount_owner: 'root'
+_def_ext_tmp_root_mount_group: 'root'
+_def_ext_tmp_root_mount_mode: '0700'
+
+# path where the USB drive gets mounted temporarily in order to copy the data from _ext_tmp_root_mount_path
+_def_ext_tmp_mount_path: '/mnt'
+_def_ext_tmp_mount_owner: 'root'
+_def_ext_tmp_mount_group: 'root'
+_def_ext_tmp_mount_mode: '0700'
+
+# list of packages which are required to setup the extroot
+_def_ext_required_packages:
+  - 'e2fsprogs'
+  - 'blkid'
+  - 'blockdev'
+  - 'tune2fs'
+  - 'block-mount'
+  - 'kmod-fs-ext4'
+  - 'wipefs'
+  - 'rsync'
+  - 'parted'
+  - 'kmod-usb-storage'
+
+# whether to quiet assert statements
+_def_ext_quiet_assert: false
+
+# whether to skip the initial assert
+_def_ext_skip_assert: false
+...

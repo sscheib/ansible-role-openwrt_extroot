@@ -1,0 +1,15 @@
+extroot
+ansible
+UUID
+UUIDs
+UCI
+uci
+OpenWrt
+filesystem
+tmp
+socio
+sexualized
+runtime
+macOS
+Traceback
+README
