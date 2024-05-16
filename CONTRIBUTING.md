@@ -1,4 +1,4 @@
-# Contributing to ansible-role-openwrt_extroot
+# Contributing to this project
 
 First off, thanks for taking the time to contribute! ❤️
 
@@ -129,9 +129,11 @@ For your first successful contribution we ask you to follow the following steps:
 
 1. [Fork this repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
 1. Clone your fork to your working machine (`git clone`)
-1. Create a new branch using `git branch -B <your_branch_name>`
+1. Create a new branch using `git checkout -B <your_branch_name>`
 1. Set up your development environment using [`pre-commit`](https://pre-commit.com) to ensure that all required continuous integration (CI) workflows succeed when committing and
    pushing your changes. The [documentation of `pre-commit`](https://pre-commit.com/#install) explains how to install it.
+1. The `pre-commit` hook `pyspelling` requires [`aspell`](https://github.com/GNUAspell/aspell) to be installed which takes care of spellchecking. *Usually* your system
+   provides a package `aspell` ready to install; Please use the package manager of your distribution to install it (e.g. `sudo dnf install aspell`)
 1. Once you set up `pre-commit`, run `pre-commit install` **and** `pre-commit install -t commit-msg` which uses the configuration file `.pre-commit-config.yaml` to install the
    required hooks - **inside a Python virtual environment**. Your system will be left untouched.
 1. Develop and **test** your code
