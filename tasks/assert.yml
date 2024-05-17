@@ -52,7 +52,7 @@
       - "lookup('ansible.builtin.vars', __t_var) | bool | string == lookup('ansible.builtin.vars', __t_var) | string"
     success_msg: "Variable '{{ __t_var }}' defined properly - value: '{{ lookup('ansible.builtin.vars', __t_var) }}'"
     fail_msg: "Variable '{{ __t_var }}' failed to validate"
-    quiet: '{{ _sat_quiet_assert }}'
+    quiet: '{{ _ext_quiet_assert }}'
   loop:
     - '_ext_create_flash_mount'
   loop_control:
@@ -62,14 +62,13 @@
   ansible.builtin.assert:
     that:
       - "lookup('ansible.builtin.vars', __t_var) is defined"
-      - "lookup('ansible.builtin.vars', __t_var) is string"
       - "lookup('ansible.builtin.vars', __t_var) is sequence"
       - "lookup('ansible.builtin.vars', __t_var) is iterable"
       - "lookup('ansible.builtin.vars', __t_var) is not mapping"
       - "lookup('ansible.builtin.vars', __t_var) | list | string == lookup('ansible.builtin.vars', __t_var) | string"
     success_msg: "Variable '{{ __t_var }}' defined properly - value: '{{ lookup('ansible.builtin.vars', __t_var) }}'"
     fail_msg: "Variable '{{ __t_var }}' failed to validate"
-    quiet: '{{ _sat_quiet_assert }}'
+    quiet: '{{ _ext_quiet_assert }}'
   loop:
     - '_ext_required_packages'
   loop_control:

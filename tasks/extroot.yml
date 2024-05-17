@@ -1,7 +1,7 @@
 ---
 - name: 'extroot | Ensure required packages are present'
   ansible.builtin.package:
-    name: '{{ _required_packages }}'
+    name: '{{ _ext_required_packages }}'
     state: 'present'
     update_cache: true
   become: true
@@ -56,8 +56,8 @@
 
 - name: 'extroot | Remove all partitions from: {{ _ext_usb_device }}'
   community.general.parted:
-    device: '{{ _usb_device }}'
-    number: '{{ item.num }}'
+    device: '{{ _ext_usb_device }}'
+    number: '{{ __t_part.num }}'
     state: 'absent'
   become: true
   loop: '{{ __t_disk_information.partitions | default([]) }}'
@@ -165,18 +165,14 @@
     src: >-
       {{
         _ext_tmp_root_mount_path
-        if _ext_tmp_root_mount_path |
-          regex_search('\/$') |
-          length == 1
+        if _ext_tmp_root_mount_path | regex_search('\/$')
         else
         _ext_tmp_root_mount_path ~ '/'
       }}
     dest: >-
       {{
         _ext_tmp_mount_path
-        if _ext_tmp_mount_path |
-          regex_search('\/$') |
-          length == 1
+        if _ext_tmp_mount_path | regex_search('\/$')
         else
         _ext_tmp_mount_path ~ '/'
       }}
@@ -191,21 +187,21 @@
     state: 'absent'
   become: true
   loop:
-    - '{{ _tmp_mount_path }}'
-    - '{{ _tmp_root_mount_path }}'
+    - '{{ _ext_tmp_mount_path }}'
+    - '{{ _ext_tmp_root_mount_path }}'
   loop_control:
     loop_var: '__t_mount'
 
 # UUIDs are not populated into ansible_facts in OpenWrt, I have no idea why
-- name: 'extroot | Get UUID of: {{ _usb_device_part }}'
+- name: 'extroot | Get UUID of: {{ _ext_usb_device_part }}'
   ansible.builtin.command:
     cmd: |
-      blkid -o value -s UUID {{ _usb_device_part }}
+      blkid -o value -s UUID {{ _ext_usb_device_part }}
   changed_when: false
   register: '__t_uuid'
   become: true
 
-- name: 'extroot | Create UCI mount entry to mount the overlay file system to: {{ _usb_device_part }}'
+- name: 'extroot | Create UCI mount entry to mount the overlay file system to: {{ _ext_usb_device_part }}'
   ansible.builtin.shell:
     cmd: |
       uci -q delete fstab.overlay || true
@@ -236,7 +232,7 @@
         ansible_facts.mounts |
         selectattr('device', '==', _ext_usb_device_part) |
         selectattr('mount', '==', _ext_overlay_filesystem_path) |
-        length = 1
+        length == 1
 
     success_msg: 'Successfully set up extroot on partition {{ _ext_usb_device_part }}'
     fail_msg: 'Setting up extroot on partition {{ _ext_usb_device_part }} failed'
@@ -248,7 +244,7 @@
       - >-
         ansible_facts.mounts |
         selectattr('mount', '==', _ext_flash_mount_path) |
-        length = 1
+        length == 1
 
     success_msg: 'Successfully mounted flash to {{ _ext_flash_mount_path }}'
     fail_msg: 'Setting up the flash mount on {{ _ext_flash_mount_path }} failed'
@@ -263,8 +259,8 @@
     state: 'absent'
   become: true
   loop:
-    - '{{ _tmp_mount_path }}'
-    - '{{ _tmp_root_mount_path }}'
+    - '{{ _ext_tmp_mount_path }}'
+    - '{{ _ext_tmp_root_mount_path }}'
   loop_control:
     loop_var: '__t_mount'
 ...

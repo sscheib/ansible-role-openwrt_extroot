@@ -12,14 +12,14 @@ _ext_usb_device_part: >-
       and ext_usb_device_part | default('') != ''
       and ext_usb_device_part | default('') != None
     ) | ansible.builtin.ternary(
-      ext_usb_device_part,
-      _ext_usb_device_part ~ 1
+      ext_usb_device_part | default(''),
+      _ext_usb_device ~ 1
     )
   }}
 
 # whether to create a flash mount so that the extroot configuration can still be modified while being
 # in the extroot (e.g. replacing USB stick or similar)
-_ext_create_flash_mount: '{{ _ext_create_flash_mount | default(_def_ext_create_flash_mount) }}'
+_ext_create_flash_mount: '{{ ext_create_flash_mount | default(_def_ext_create_flash_mount) }}'
 _ext_flash_mount_path: '{{ ext_flash_mount_path | default(_def_ext_flash_mount_path) }}'
 _ext_flash_mount_owner: '{{ ext_flash_mount_owner | default(_def_ext_flash_mount_owner) }}'
 _ext_flash_mount_group: '{{ ext_flash_mount_group | default(_def_ext_flash_mount_group) }}'
