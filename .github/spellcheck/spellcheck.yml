@@ -70,7 +70,7 @@ matrix:
             #
             # - name: my task name  # nospell
             #
-            - open: '(?s).+#(\s+)?.+?nospell(.+)?'
+            - open: '(?s).+#(\s+)?.+?nospell(.+?)?'
               close: '$'
 
             # ignore nospell blocks
