@@ -4,5 +4,5 @@ collections:
     version: '8.6.6'
 
   - name: 'ansible.posix'
-    version: '1.6.1'
+    version: '1.6.2'
 ...
