@@ -12,7 +12,7 @@ ci:
 
 repos:
   - repo: 'https://github.com/ansible/ansible-lint'
-    rev: 'v24.9.2'
+    rev: 'v24.10.0'
     hooks:
       - id: 'ansible-lint'
         stages:
@@ -30,7 +30,7 @@ repos:
         language_version: '3.11'
 
   - repo: 'https://github.com/pre-commit/pre-commit-hooks'
-    rev: 'v4.6.0'
+    rev: 'v5.0.0'
     hooks:
       - id: 'check-executables-have-shebangs'
         stages:
@@ -101,7 +101,7 @@ repos:
         verbose: true
 
   - repo: 'https://github.com/tcort/markdown-link-check.git'
-    rev: 'v3.12.2'
+    rev: 'v3.13.6'
     hooks:
       - id: 'markdown-link-check'
         stages:
