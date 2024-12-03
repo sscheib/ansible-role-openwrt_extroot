@@ -114,7 +114,7 @@ repos:
           - '.markdown-link-check.json'
 
   - repo: 'https://github.com/igorshubovych/markdownlint-cli'
-    rev: 'v0.42.0'
+    rev: 'v0.43.0'
     hooks:
       - id: 'markdownlint'
         stages:
@@ -123,7 +123,7 @@ repos:
         pass_filenames: true
 
   - repo: 'https://github.com/alessandrojcm/commitlint-pre-commit-hook'
-    rev: 'v9.18.0'
+    rev: 'v9.19.0'
     hooks:
       - id: 'commitlint'
         stages:
