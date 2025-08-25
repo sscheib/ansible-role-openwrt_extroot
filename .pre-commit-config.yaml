@@ -12,7 +12,7 @@ ci:
 
 repos:
   - repo: 'https://github.com/ansible/ansible-lint'
-    rev: 'v25.5.0'
+    rev: 'v25.8.2'
     hooks:
       - id: 'ansible-lint'
         stages:
@@ -30,7 +30,7 @@ repos:
         language_version: '3.11'
 
   - repo: 'https://github.com/pre-commit/pre-commit-hooks'
-    rev: 'v5.0.0'
+    rev: 'v6.0.0'
     hooks:
       - id: 'check-executables-have-shebangs'
         stages:
